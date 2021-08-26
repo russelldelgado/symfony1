@@ -22,6 +22,11 @@ class Categoria
      */
     private $nombre;
 
+    /**
+     * @ORM\Column(type="string", length=20)
+     */
+    private $color;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -37,5 +42,22 @@ class Categoria
         $this->nombre = $nombre;
 
         return $this;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): self
+    {
+        $this->color = $color;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->nombre;
     }
 }
