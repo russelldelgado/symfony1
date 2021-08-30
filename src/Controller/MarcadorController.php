@@ -13,14 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/marcador')]
 class MarcadorController extends AbstractController
 {
-    #[Route('/', name: 'marcador_index', methods: ['GET'])]
-    public function index(MarcadorRepository $marcadorRepository): Response
-    {
-        return $this->render('marcador/index.html.twig', [
-            'marcadors' => $marcadorRepository->findAll(),
-        ]);
-    }
-
+  
     #[Route('/new', name: 'marcador_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
@@ -33,20 +26,17 @@ class MarcadorController extends AbstractController
             $entityManager->persist($marcador);
             $entityManager->flush();
 
-            return $this->redirectToRoute('marcador_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash(
+               'success',
+               'Marcador creado correctamente'
+            );
+
+            return $this->redirectToRoute('app_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('marcador/new.html.twig', [
             'marcador' => $marcador,
             'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'marcador_show', methods: ['GET'])]
-    public function show(Marcador $marcador): Response
-    {
-        return $this->render('marcador/show.html.twig', [
-            'marcador' => $marcador,
         ]);
     }
 
@@ -59,7 +49,13 @@ class MarcadorController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('marcador_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash(
+                'success',
+                'Marcador editado correctamente'
+             );
+ 
+
+            return $this->redirectToRoute('app_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('marcador/edit.html.twig', [
@@ -75,8 +71,14 @@ class MarcadorController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($marcador);
             $entityManager->flush();
+            $this->addFlash(
+                'success',
+                'Marcador eliminado correctamente'
+             );
+    
         }
 
-        return $this->redirectToRoute('marcador_index', [], Response::HTTP_SEE_OTHER);
+
+        return $this->redirectToRoute('app_index', [], Response::HTTP_SEE_OTHER);
     }
 }
