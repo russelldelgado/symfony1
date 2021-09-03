@@ -2,11 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\MarcadorRepository;
+use App\Validator as AppAssert;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
+//orm/haslifeciclecallbacks() --> con esto indicamos que alguna de estas anotaciones tiene que actuar en algun momento suscribiendose a su ciclo de vida
 /**
+ * @ORM\HasLifecycleCallbacks()
  * @ORM\Entity(repositoryClass=MarcadorRepository::class)
  */
 class Marcador
@@ -28,6 +32,7 @@ class Marcador
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank()
      * @Assert\Url()
+     * @AppAssert\Urlaccesible
      */
     private $url;
 
@@ -37,6 +42,21 @@ class Marcador
      * @Assert\NotBlank()
      */
     private $categoria;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $creado;
+
+
+    //con este campo indicamos que realce esta funcion antes de guardarse , es lo mismo que lo indiquemos en el constructor
+    /**
+     * @ORM\PrePersist
+     */
+    public function setValorDefecto(){
+        $this->creado = new \DateTime();
+
+    }
 
     public function getId(): ?int
     {
@@ -75,6 +95,18 @@ class Marcador
     public function setCategoria(?Categoria $categoria): self
     {
         $this->categoria = $categoria;
+
+        return $this;
+    }
+
+    public function getCreado(): ?\DateTimeInterface
+    {
+        return $this->creado;
+    }
+
+    public function setCreado(\DateTimeInterface $creado): self
+    {
+        $this->creado = $creado;
 
         return $this;
     }
